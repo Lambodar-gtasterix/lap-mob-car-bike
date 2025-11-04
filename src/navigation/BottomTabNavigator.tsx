@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 import HomeScreen from '../screens/HomeScreen';
 import LiveBiddingScreen from '../screens/LiveBiddingScreen';
@@ -30,7 +31,19 @@ export default function BottomTabNavigator() {
       <Tab.Screen name="Profile" component={ProfileScreen} />
 
       {/* ✅ Two separate entry points */}
-      <Tab.Screen name="MyAds" component={MyAdsEntryStack} options={{ title: 'My Ads' }} />
+      <Tab.Screen
+        name="MyAds"
+        component={MyAdsEntryStack}
+        options={({ route }) => {
+          const routeName = getFocusedRouteNameFromRoute(route);
+          // Hide tab bar when on nested stacks (not on MyAdsScreen)
+          const shouldHideTabBar = routeName && routeName !== 'MyAdsScreen';
+          return {
+            title: 'My Ads',
+            tabBarStyle: shouldHideTabBar ? { display: 'none' } : undefined,
+          };
+        }}
+      />
       <Tab.Screen name="Sell" component={SellEntryStack} options={{ title: '+ Sell' }} />
     </Tab.Navigator>
   );

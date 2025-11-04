@@ -19,7 +19,7 @@ export type AddBikeBody = {
 type BackendBikeResponse = {
   status: string;
   message: string;
-  data: string; // "BikeId:117"
+  bikeId: number;
   timestamp: string;
 };
 
@@ -33,19 +33,10 @@ export async function addBike(body: AddBikeBody): Promise<AddBikeResponse> {
   const res = await api.post<BackendBikeResponse>('/bikes/post', body);
   const backendData = res.data;
 
-  // Parse bikeId from "BikeId:117" format
-  let bikeId: number | undefined;
-  if (backendData.data && typeof backendData.data === 'string') {
-    const match = backendData.data.match(/BikeId:(\d+)/i);
-    if (match && match[1]) {
-      bikeId = parseInt(match[1], 10);
-    }
-  }
-
   // Return normalized response format
   return {
     code: backendData.status || '200',
     message: backendData.message || 'Bike created successfully',
-    bikeId,
+    bikeId: backendData.bikeId,
   };
 }

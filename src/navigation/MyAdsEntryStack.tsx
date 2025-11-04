@@ -7,6 +7,7 @@ import MyAdsScreen from '../screens/MyAdsScreen';
 import MyMobileAdsStack from './MyMobileAdsStack';
 import MyLaptopAdsStack from './MyLaptopAdsStack';
 import MyCarAdsStack from './MyCarAdsStack';
+import MyBikeAdsStack from './MyBikeAdsStack';
 
 
 export type MyAdsEntryStackParamList = {
@@ -14,7 +15,7 @@ export type MyAdsEntryStackParamList = {
   MyMobileAdsStack: undefined;
   MyLaptopAdsStack: undefined;
   MyCarAdsStack: undefined;
-  // future: MyBikeAdsStack...
+  MyBikeAdsStack: undefined;
 };
 
 const Stack = createNativeStackNavigator<MyAdsEntryStackParamList>();
@@ -26,6 +27,7 @@ export default function MyAdsEntryStack() {
       <Stack.Screen name="MyMobileAdsStack" component={MyMobileAdsStack} />
       <Stack.Screen name="MyLaptopAdsStack" component={MyLaptopAdsStack} />
       <Stack.Screen name="MyCarAdsStack" component={MyCarAdsStack} />
+      <Stack.Screen name="MyBikeAdsStack" component={MyBikeAdsStack} />
     </Stack.Navigator>
   );
 }

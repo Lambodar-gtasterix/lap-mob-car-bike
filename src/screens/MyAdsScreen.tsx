@@ -53,6 +53,13 @@ const MyAdsScreen: React.FC = () => {
       return;
     }
 
+    if (id === 'bike') {
+      (navigation as any).navigate('MyBikeAdsStack', {
+        screen: 'MyBikeAdsList',
+      });
+      return;
+    }
+
     // placeholder for other entities
     console.log(`Pressed category: ${id}`);
   };

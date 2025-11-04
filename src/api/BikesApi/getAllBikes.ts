@@ -3,42 +3,43 @@ import client from '../client';
 export type BikeStatus = 'ACTIVE' | 'DRAFT' | 'SOLD' | string;
 
 export type BikeItem = {
-  bikeId: number;
-  title: string;
-  description?: string;
-  price: number;
-  negotiable?: boolean;
-  condition?: string;
+  bike_id: number;
+  prize: number;
   brand?: string;
   model?: string;
   variant?: string;
-  color?: string;
   manufactureYear?: number;
+  engineCC?: number;
+  kilometersDriven?: number;
+  fuelType?: string;
+  color?: string;
+  registrationNumber?: string;
+  description?: string;
+  sellerId?: number;
   status?: BikeStatus;
   createdAt?: string;
-  updatedAt?: string | null;
-  sellerId?: number;
-  images?: string[];
+  images?: Array<{
+    imageId: number;
+    image_link: string;
+    publicId: string;
+  }>;
 };
 
-export type PageResponse<T> = {
-  content: T[];
-  pageable?: unknown;
-  totalPages?: number;
-  totalElements?: number;
-  size?: number;
-  number?: number; // current page
-  last?: boolean;
-  first?: boolean;
-  numberOfElements?: number;
-  empty?: boolean;
-};
+export type BikeResponse = BikeItem[];
 
 export async function getAllBikes(params?: { page?: number; size?: number; sort?: string }) {
-  const { page = 0, size = 20, sort = 'createdAt,DESC' } = params || {};
-  const res = await client.get<PageResponse<BikeItem>>(
-    `/api/v1/bikes/getAllBikes`,
-    { params: { page, size, sort } }
-  );
-  return res.data;
+  const res = await client.get<BikeResponse>('/bikes/get');
+
+  // Transform response to match PageResponse format for compatibility
+  return {
+    content: res.data || [],
+    last: true,
+    first: true,
+    totalPages: 1,
+    totalElements: res.data?.length || 0,
+    size: res.data?.length || 0,
+    number: 0,
+    numberOfElements: res.data?.length || 0,
+    empty: !res.data || res.data.length === 0,
+  };
 }

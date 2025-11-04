@@ -67,17 +67,15 @@ export const bikeDetailsSchema = z.object({
 export type BikeDetailsFormValues = z.infer<typeof bikeDetailsSchema>;
 
 export const getDefaultBikeDetailsValues = (): BikeDetailsFormValues => ({
-  prize: 85000,
+  prize: '85000',
   brand: 'Honda',
   model: 'CB Shine 125',
   variant: 'Drum Brake',
-  manufactureYear: 2023,
-  engineCC: 125,
-  kilometersDriven: 12500,
+  manufactureYear: '2023',
+  engineCC: '125',
+  kilometersDriven: '12500',
   fuelType: 'PETROL',
   color: 'Black',
   registrationNumber: 'MH12AB1234',
   description: 'Well maintained bike, single owner, all service records available. Regular servicing done at authorized Honda service center. Good condition with minor scratches.',
-  sellerId: 1,
-  status: 'ACTIVE'
 });

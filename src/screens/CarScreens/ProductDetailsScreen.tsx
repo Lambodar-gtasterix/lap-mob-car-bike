@@ -18,7 +18,7 @@ type DetailsRouteProp = RouteProp<MyCarAdsStackParamList, 'ProductDetails'>;
 type NavProp = NativeStackNavigationProp<MyCarAdsStackParamList>;
 
 const ACTION_BAR_HEIGHT = 96;
-const PLACEHOLDER_IMAGE = require('../../assets/icons/hyundai.png');
+const PLACEHOLDER_IMAGE = require('../../assets/icons/bike.png');
 
 const currencyText = (value?: number) => {
   if (typeof value === 'number') {
