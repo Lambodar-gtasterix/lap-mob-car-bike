@@ -24,6 +24,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'dealer',
     label: 'Dealer',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'Enter dealer name',
       autoCapitalize: 'words' as const,
@@ -67,6 +68,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'warrantyInYear',
     label: 'Warranty (Years)',
     component: 'dropdown',
+    required: true,
     props: {
       data: warrantyOptions,
       placeholder: 'Select warranty duration',
@@ -76,6 +78,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'processor',
     label: 'Processor',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., Intel Core i5-1335U',
       autoCapitalize: 'words' as const,
@@ -85,6 +88,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'processorBrand',
     label: 'Processor Brand',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., Intel, AMD',
       autoCapitalize: 'words' as const,
@@ -94,6 +98,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'ram',
     label: 'RAM',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., 16 GB',
       autoCapitalize: 'characters' as const,
@@ -104,6 +109,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'storage',
     label: 'Storage',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., 512 GB SSD',
       autoCapitalize: 'characters' as const,
@@ -114,6 +120,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'colour',
     label: 'Colour',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., Silver',
       autoCapitalize: 'words' as const,
@@ -123,6 +130,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'screenSize',
     label: 'Screen Size',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., 15.6 inch',
       autoCapitalize: 'none' as const,
@@ -133,6 +141,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'memoryType',
     label: 'Memory Type',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., DDR4',
       autoCapitalize: 'characters' as const,
@@ -143,6 +152,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'battery',
     label: 'Battery',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., 41 Wh Li-ion',
       autoCapitalize: 'words' as const,
@@ -152,6 +162,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'batteryLife',
     label: 'Battery Life',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., Up to 8 hours',
       autoCapitalize: 'sentences' as const,
@@ -161,6 +172,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'graphicsCard',
     label: 'Graphics Card',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., Intel Iris Xe',
       autoCapitalize: 'words' as const,
@@ -170,6 +182,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'graphicBrand',
     label: 'Graphic Brand',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., Intel',
       autoCapitalize: 'words' as const,
@@ -179,6 +192,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'weight',
     label: 'Weight',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., 1.59 kg',
       autoCapitalize: 'none' as const,
@@ -189,6 +203,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'manufacturer',
     label: 'Manufacturer',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'e.g., HP India Pvt Ltd',
       autoCapitalize: 'words' as const,
@@ -198,6 +213,7 @@ export const laptopDetailsFieldConfig: Array<FormFieldConfig<LaptopDetailsFormVa
     field: 'usbPorts',
     label: 'USB Ports',
     component: 'text',
+    required: true,
     props: {
       placeholder: 'Number of USB ports',
       keyboardType: 'numeric' as const,

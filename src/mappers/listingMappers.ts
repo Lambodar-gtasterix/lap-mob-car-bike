@@ -14,10 +14,10 @@ export interface MobileCreateDTO {
   description: string;
   price: number;
   negotiable: boolean;
-  condition: Condition;
+  condition: 'NEW' | 'USED' | 'REFURBISHED';
   brand: string;
   model: string;
-  color: string;
+  color?: string | null;
   yearOfPurchase: number;
   sellerId: number;
 }
@@ -121,21 +121,33 @@ export const toMobileCreateDTO = (
   values: MobileDetailsFormValues,
   sellerId: number,
 ): MobileCreateDTO => {
-  const price = Number(values.price);
-  const year = Number(values.yearOfPurchase);
+  const priceValue = Number(values.price);
+  if (!Number.isFinite(priceValue)) {
+    throw new Error('Invalid price');
+  }
+  const price = Number(priceValue.toFixed(2));
+  const yearOfPurchase = Number(values.yearOfPurchase);
 
-  return {
+  const colorValue = values.color?.trim();
+  const hasColor = colorValue && colorValue.length > 0;
+
+  const dto: MobileCreateDTO = {
     title: values.title.trim(),
     description: values.description.trim(),
-    price: Number.isFinite(price) ? price : 0,
+    price,
     negotiable: values.negotiable === true,
-    condition: values.condition as Condition,
+    condition: values.condition.toUpperCase() as 'NEW' | 'USED' | 'REFURBISHED',
     brand: values.brand.trim(),
     model: values.model.trim(),
-    color: values.color.trim(),
-    yearOfPurchase: Number.isFinite(year) ? year : new Date().getFullYear(),
+    yearOfPurchase,
     sellerId,
   };
+
+  if (hasColor) {
+    dto.color = colorValue;
+  }
+
+  return dto;
 };
 
 export const toCarCreateDTO = (

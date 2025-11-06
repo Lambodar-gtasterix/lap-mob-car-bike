@@ -5,22 +5,29 @@ import { StyleSheet, Text } from 'react-native';
 import { FormFieldConfig } from './types';
 import { MobileDetailsFormValues } from '../schemas/mobileDetailsSchema';
 import { DropdownOption } from '../../components/form/DropdownField';
-import { Condition } from '../../types/listings';
 import { colors } from '../../theme/tokens';
 
 interface MobileFieldConfigOptions {
   onOpenYearPicker: () => void;
 }
 
-const conditionOptions: DropdownOption<Condition>[] = [
+type MobileCondition = 'NEW' | 'USED' | 'REFURBISHED';
+
+const conditionOptions: DropdownOption<MobileCondition>[] = [
   { label: 'NEW', value: 'NEW' },
   { label: 'USED', value: 'USED' },
+  { label: 'REFURBISHED', value: 'REFURBISHED' },
 ];
 
 const negotiableOptions: DropdownOption<boolean>[] = [
   { label: 'Yes', value: true },
   { label: 'No', value: false },
 ];
+
+// Helper function to count words
+const wordCount = (s: string): number => {
+  return s.trim().split(/\s+/).filter(Boolean).length;
+};
 
 export const getMobileDetailsFieldConfig = ({
   onOpenYearPicker,
@@ -33,7 +40,7 @@ export const getMobileDetailsFieldConfig = ({
     props: {
       placeholder: 'e.g., iPhone 15 Pro - Excellent Condition',
       autoCapitalize: 'sentences' as const,
-      maxLength: 80,
+      maxLength: 150,
     },
   },
   {
@@ -44,11 +51,11 @@ export const getMobileDetailsFieldConfig = ({
     props: {
       placeholder: "Describe your mobile's condition, features, and accessories...",
       autoCapitalize: 'sentences' as const,
-      maxLength: 400,
     },
-    getLabelAccessory: ({ values }) => (
-      <Text style={styles.charCount}>{values.description.length}/400</Text>
-    ),
+    getLabelAccessory: ({ values }) => {
+      const count = wordCount(values.description || '');
+      return <Text style={styles.charCount}>{count}/70 words</Text>;
+    },
   },
   {
     field: 'price',
@@ -57,10 +64,16 @@ export const getMobileDetailsFieldConfig = ({
     required: true,
     props: {
       placeholder: 'Enter price in ₹',
-      keyboardType: 'numeric' as const,
-      maxLength: 10,
+      keyboardType: 'decimal-pad' as const,
+      maxLength: 11,
     },
-    transform: (value: string) => value.replace(/[^0-9]/g, ''),
+    transform: (value: string) => {
+      // Allow digits and a single dot; keep at most 2 decimals
+      return value
+        .replace(/[^\d.]/g, '')
+        .replace(/^(\d*\.?\d{0,2}).*$/, '$1')
+        .replace(/(\..*)\./g, '$1');
+    },
   },
   {
     field: 'condition',
@@ -101,9 +114,9 @@ export const getMobileDetailsFieldConfig = ({
     component: 'text',
     required: true,
     props: {
-      placeholder: 'e.g., Midnight Blue, Space Gray',
+      placeholder: 'e.g., Sierra Blue or #1a2b3c',
       autoCapitalize: 'words' as const,
-      maxLength: 40,
+      maxLength: 30,
     },
   },
   {

@@ -5,10 +5,10 @@ export type AddMobileBody = {
   description: string;
   price: number;
   negotiable: boolean;
-  condition: string;   // "NEW" | "USED"
+  condition: 'NEW' | 'USED' | 'REFURBISHED';
   brand: string;
   model: string;
-  color: string;
+  color?: string | null;
   yearOfPurchase: number;
   sellerId: number;
 };
