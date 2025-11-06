@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -40,13 +41,12 @@ const LoginScreen = () => {
       await signIn(email, password);
 
     } catch (e: any) {
+      setLoading(false);
       const msg =
         e?.response?.data?.message ||
         e?.response?.data?.errorMessage ||
         'Invalid email or password';
       Alert.alert('Login failed', msg);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -106,6 +106,16 @@ const LoginScreen = () => {
           </Text>
         </Text>
       </View>
+
+      {/* Loading Overlay */}
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" color="#1D6D99" />
+            <Text style={styles.loadingText}>Loading...</Text>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -195,4 +205,26 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontWeight: 'bold' },
   footerText: { fontSize: 12, textAlign: 'center' },
   link: { color: '#1D6D99', fontWeight: '500' },
+
+  // Loading overlay
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  loadingContent: {
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
 });

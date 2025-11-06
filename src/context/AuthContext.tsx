@@ -14,6 +14,7 @@ import {
 type AuthState = {
   isLoading: boolean;
   isSignedIn: boolean;
+  isAuthenticating: boolean;
   accessToken: string | null;
   userId: number | null;
   sellerId: number | null;
@@ -23,6 +24,7 @@ type AuthState = {
 type AuthContextType = AuthState & {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  clearAuthenticating: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,6 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const INITIAL_STATE: AuthState = {
   isLoading: true,
   isSignedIn: false,
+  isAuthenticating: false,
   accessToken: null,
   userId: null,
   sellerId: null,
@@ -39,6 +42,7 @@ const INITIAL_STATE: AuthState = {
 const sessionToState = (session: PersistedSession | null): AuthState => ({
   isLoading: false,
   isSignedIn: Boolean(session),
+  isAuthenticating: false,
   accessToken: session?.accessToken ?? null,
   userId: session?.userId ?? null,
   sellerId: session?.sellerId ?? null,
@@ -76,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Login
   const signIn = useCallback(async (email: string, password: string) => {
-    setState((prev) => ({ ...prev, isLoading: true }));
+    setState((prev) => ({ ...prev, isAuthenticating: true }));
 
     try {
       const data: LoginResponse = await loginUser({ username: email, password });
@@ -113,15 +117,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sellerId,
         fingerprint: data.fingerprint ?? null,
       });
+      // Keep isAuthenticating true - will be cleared after navigation completes
     } catch (error) {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      setState((prev) => ({ ...prev, isAuthenticating: false }));
       throw error;
     }
   }, []);
 
   // Logout
   const signOut = useCallback(async () => {
-    setState((prev) => ({ ...prev, isLoading: true }));
+    setState((prev) => ({ ...prev, isAuthenticating: true }));
 
     const session = getCachedSession();
     const accessToken = session?.accessToken ?? null;
@@ -142,13 +147,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await clearSession();
   }, []);
 
+  const clearAuthenticating = useCallback(() => {
+    setState((prev) => ({ ...prev, isAuthenticating: false }));
+  }, []);
+
   const value = useMemo(
     () => ({
       ...state,
       signIn,
       signOut,
+      clearAuthenticating,
     }),
-    [signIn, signOut, state]
+    [signIn, signOut, clearAuthenticating, state]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

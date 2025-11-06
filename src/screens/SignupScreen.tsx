@@ -12,6 +12,7 @@ import {
   Platform,
   ScrollView,
   useWindowDimensions,
+  ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -105,11 +106,10 @@ const SignupScreen = () => {
         { text: 'OK', onPress: () => navigation.navigate('Login') }
       ]);
     } catch (e: any) {
+      setSubmitting(false);
       const data = e?.response?.data;
       const msg = data?.errorMessage || data?.message || e?.message || 'Signup failed';
       Alert.alert('Error', msg);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -329,6 +329,16 @@ const SignupScreen = () => {
             </TouchableOpacity>
           </View>
         </Modal>
+
+        {/* Loading Overlay */}
+        {submitting && (
+          <View style={styles.loadingOverlay}>
+            <View style={styles.loadingContent}>
+              <ActivityIndicator size="large" color="#0F5E87" />
+              <Text style={styles.loadingText}>Loading...</Text>
+            </View>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -398,4 +408,26 @@ const styles = StyleSheet.create({
   sheetItemTextActive: { color: '#0F5E87', fontWeight: '700' },
   sheetCancel: { alignItems: 'center', marginTop: 4 },
   sheetCancelText: { color: '#0F5E87', fontWeight: '600' },
+
+  // Loading overlay
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  loadingContent: {
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
 });

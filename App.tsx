@@ -1,5 +1,5 @@
 // App.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -50,6 +50,17 @@ function AuthStackScreen() {
 }
 
 function MainTabNavigator() {
+  const { clearAuthenticating } = useAuth();
+
+  // Clear authenticating state once Main screen is mounted
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      clearAuthenticating();
+    }, 500); // Small delay to ensure smooth transition
+
+    return () => clearTimeout(timer);
+  }, [clearAuthenticating]);
+
   return (
     <Tab.Navigator
       tabBar={(props) => <CustomTabBar {...props} />}
@@ -73,7 +84,7 @@ function MainTabNavigator() {
 function AppNavigator() {
   const { isSignedIn, isLoading } = useAuth();
 
-  if (isLoading) return null; // Optional: splash component
+  if (isLoading) return null; // Initial session load
 
   return (
     <NavigationContainer>
