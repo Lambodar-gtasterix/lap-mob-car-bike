@@ -70,7 +70,7 @@ const AddLaptopDetailsScreen: React.FC = () => {
               const nextValue =
                 config.transform?.(text, { values }) ?? text;
               setFieldValue(field, nextValue as LaptopDetailsFormValues[typeof field], {
-                validate: Boolean(touched[field]),
+                validate: true,
               });
             }}
             onBlur={() => handleBlur(field)}
@@ -114,11 +114,6 @@ const AddLaptopDetailsScreen: React.FC = () => {
 
     const valid = validateForm();
     if (!valid) {
-      return;
-    }
-
-    if (!values.serialNumber.trim() || !values.brand.trim() || !values.model.trim() || !values.price.trim()) {
-      Alert.alert('Error', 'Please enter Serial Number, Brand, Model, and Price');
       return;
     }
 

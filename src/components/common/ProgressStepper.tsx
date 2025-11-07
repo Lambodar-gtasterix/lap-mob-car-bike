@@ -31,7 +31,7 @@ const ProgressStepper: React.FC<ProgressStepperProps> = ({ steps }) => {
                 ]}
               >
                 {step.status === 'completed' ? (
-                  <Icon name="check" size={16} color={colors.white} />
+                  <Icon name="check" size={12} color={colors.white} />
                 ) : (
                   <Text
                     style={[
@@ -73,17 +73,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.xl,
+    paddingVertical: spacing.md,
     backgroundColor: colors.white,
-    marginBottom: spacing.md,
+    marginBottom: spacing.sm,
   },
   step: {
     alignItems: 'center',
   },
   circle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     backgroundColor: colors.stepInactive,
     justifyContent: 'center',
     alignItems: 'center',
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.stepActive,
   },
   circleText: {
-    fontSize: 14,
+    fontSize: 11,
     fontWeight: '600',
     color: colors.textMuted,
   },
@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   label: {
-    fontSize: 12,
+    fontSize: 10,
     color: colors.textMuted,
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
     fontWeight: '500',
   },
   labelActive: {
@@ -120,10 +120,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   connector: {
-    width: 40,
+    width: 24,
     height: 2,
     backgroundColor: colors.stepInactive,
-    marginHorizontal: spacing.sm,
+    marginHorizontal: spacing.xs,
   },
   connectorActive: {
     backgroundColor: colors.stepActive,

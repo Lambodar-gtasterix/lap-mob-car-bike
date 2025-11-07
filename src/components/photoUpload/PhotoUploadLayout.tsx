@@ -36,7 +36,7 @@ type PhotoUploadLayoutProps = {
   title: string;
   onBackPress: () => void;
   backDisabled?: boolean;
-  steps: PhotoUploadStep[];
+  steps?: PhotoUploadStep[];
   actions: PhotoUploadAction[];
   uploading: boolean;
   progress: PhotoUploadProgressState | null;
@@ -55,16 +55,6 @@ const PhotoUploadLayout: React.FC<PhotoUploadLayoutProps> = ({
   progress,
   progressHint = 'Please wait...',
 }) => {
-  const mapStepState: Record<PhotoUploadStepState, StepStatus> = {
-    complete: 'completed',
-    active: 'current',
-    upcoming: 'upcoming',
-  };
-
-  const stepperSteps: StepConfig[] = steps.map((step) => ({
-    label: step.label,
-    status: mapStepState[step.state],
-  }));
 
   const percent =
     progress && progress.total > 0
@@ -78,8 +68,6 @@ const PhotoUploadLayout: React.FC<PhotoUploadLayoutProps> = ({
           title={title}
           onBack={!backDisabled ? onBackPress : undefined}
         />
-
-        <ProgressStepper steps={stepperSteps} />
 
         <View style={styles.content}>
           <View style={styles.actionRow}>
@@ -147,7 +135,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xl,
+    paddingTop: spacing.xxl,
   },
   actionRow: {
     flexDirection: 'row',

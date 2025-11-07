@@ -121,8 +121,20 @@ function shouldHideTabBar(state: BottomTabBarProps['state']) {
     return false;
   }
 
+  // Sell flow lives inside the "Sell Product" tab. When the nested stack is still
+  // bootstrapping (no nested state yet) or the active nested screen is SellProduct,
+  // hide the bar so the footer is never shown on SellProductScreen.
+  if (activeRoute.name === 'Sell Product') {
+    const nestedState = (activeRoute as any)?.state;
+    const nestedRouteName = nestedState?.routes?.[nestedState.index]?.name;
+    if (!nestedRouteName || nestedRouteName === 'SellProduct') {
+      return true;
+    }
+  }
+
   const routeNames = collectRouteNames(activeRoute as any);
   const hiddenRoutes = new Set([
+    'SellProduct',
     'AddCarDetails',
     'AddBikeDetails',
     'AddMobileDetails',

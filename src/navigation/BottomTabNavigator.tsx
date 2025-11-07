@@ -44,7 +44,11 @@ export default function BottomTabNavigator() {
           };
         }}
       />
-      <Tab.Screen name="Sell" component={SellEntryStack} options={{ title: '+ Sell' }} />
+      <Tab.Screen
+        name="Sell"
+        component={SellEntryStack}
+        options={{ title: '+ Sell' }}
+      />
     </Tab.Navigator>
   );
 }

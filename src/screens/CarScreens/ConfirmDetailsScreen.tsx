@@ -5,7 +5,6 @@ import { CommonActions, RouteProp, useNavigation, useRoute } from '@react-naviga
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import SellFlowLayout from '../Sell/common/SellFlowLayout';
-import { buildSellFlowSteps } from '../Sell/common/steps';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import ConfirmContactForm, {
   type ConfirmContactFormValues,
@@ -17,8 +16,6 @@ import { SellCarStackParamList } from '../../navigation/SellCarStack';
 
 type ConfirmRoute = RouteProp<SellCarStackParamList, 'ConfirmDetails'>;
 type ConfirmNav = NativeStackNavigationProp<SellCarStackParamList, 'ConfirmDetails'>;
-
-const CONFIRM_STEPS = buildSellFlowSteps(2);
 const PRICE_PLACEHOLDER = 'e.g., Rs 950000';
 
 const ConfirmDetailsScreen: React.FC = () => {
@@ -82,7 +79,6 @@ const ConfirmDetailsScreen: React.FC = () => {
     <SellFlowLayout
       title="Confirm Details"
       onBack={() => navigation.goBack()}
-      steps={CONFIRM_STEPS}
       footer={<PrimaryButton label="Post Now" onPress={handlePostNow} loading={loading} />}
     >
       <ConfirmContactForm

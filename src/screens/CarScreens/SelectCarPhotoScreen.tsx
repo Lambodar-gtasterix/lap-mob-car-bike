@@ -7,7 +7,6 @@ import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-pick
 
 import PhotoUploadLayout, {
   PhotoUploadProgressState,
-  PhotoUploadStep,
 } from '../../components/photoUpload/PhotoUploadLayout';
 import { useSafeAsyncState } from '../../hooks/useSafeAsyncState';
 import { CarStackParamList } from '../../navigation/CarStack';
@@ -17,13 +16,8 @@ import { uploadCarImages } from '../../api/CarsApi/uploadImages';
 type SelectPhotoNavProp = NativeStackNavigationProp<CarStackParamList, 'SelectPhoto'>;
 type RouteProps = RouteProp<CarStackParamList, 'SelectPhoto'>;
 
-const STEPS: PhotoUploadStep[] = [
-  { label: 'Details', state: 'complete', stepNumber: 1 },
-  { label: 'Photos', state: 'active', stepNumber: 2 },
-  { label: 'Confirm', state: 'upcoming', stepNumber: 3 },
-];
-
 const PROGRESS_HINT = 'Please wait...';
+const MAX_PHOTOS = 10;
 
 const SelectCarPhotoScreen: React.FC = () => {
   const navigation = useNavigation<SelectPhotoNavProp>();
@@ -35,6 +29,15 @@ const SelectCarPhotoScreen: React.FC = () => {
     null,
   );
 
+  // Validate carId on mount
+  React.useEffect(() => {
+    if (!carId) {
+      Alert.alert('Error', 'Missing car ID. Please go back and try again.', [
+        { text: 'Go Back', onPress: () => navigation.goBack() },
+      ]);
+    }
+  }, [carId, navigation]);
+
   const uploadFromAssets = async (assets: Asset[]) => {
     if (uploading) return;
 
@@ -43,19 +46,33 @@ const SelectCarPhotoScreen: React.FC = () => {
       return;
     }
 
-    const valid = (assets || []).filter((asset) => !!asset?.uri);
-    if (valid.length === 0) {
-      Alert.alert('Error', 'No photo selected');
+    // Filter out videos and keep only images
+    const validAssets = (assets || []).filter((asset) => {
+      const isImage = asset.type?.startsWith('image/');
+      return isImage && !!asset?.uri;
+    });
+
+    if (validAssets.length === 0) {
+      Alert.alert('Error', 'No photo selected. Only images are allowed.');
       return;
     }
 
+    // Enforce max 10 photos
+    if (validAssets.length > MAX_PHOTOS) {
+      Alert.alert(
+        'Too Many Photos',
+        `You can only upload up to ${MAX_PHOTOS} photos. Only the first ${MAX_PHOTOS} will be uploaded.`,
+      );
+      validAssets.splice(MAX_PHOTOS); // Keep only first 10
+    }
+
     setUploading(true);
-    setUploadProgress({ total: valid.length, uploaded: 0, current: 'Starting...' });
+    setUploadProgress({ total: validAssets.length, uploaded: 0, current: 'Starting...' });
 
     try {
       await ensureOverlayReady();
 
-      const files = valid.map((asset, index) => ({
+      const files = validAssets.map((asset, index) => ({
         uri: asset.uri!,
         name: asset.fileName ?? `car_${Date.now()}_${index}.jpg`,
         type: asset.type ?? 'image/jpeg',
@@ -118,14 +135,14 @@ const SelectCarPhotoScreen: React.FC = () => {
             {
               text: 'Continue Anyway',
               onPress: () =>
-                navigation.navigate('ConfirmDetails', { carId, images: uploadedUrls }),
+                navigation.navigate('CarPricingScreen', { carId, images: uploadedUrls }),
             },
             { text: 'Retry Failed', style: 'cancel' },
           ],
         );
       } else {
         Alert.alert('Success', `All ${successCount} images uploaded successfully!`);
-        navigation.navigate('ConfirmDetails', { carId, images: uploadedUrls });
+        navigation.navigate('CarPricingScreen', { carId, images: uploadedUrls });
       }
     } catch (error: any) {
       console.error('[CAR UPLOAD FAILED]', error?.response?.data || error?.message || error);
@@ -163,7 +180,7 @@ const SelectCarPhotoScreen: React.FC = () => {
     try {
       const res = await launchImageLibrary({
         mediaType: 'photo',
-        selectionLimit: 10,
+        selectionLimit: MAX_PHOTOS, // Allow up to 10 photos - numbers show in native gallery
         quality: 0.8,
         maxWidth: 1920,
         maxHeight: 1920,
@@ -183,7 +200,6 @@ const SelectCarPhotoScreen: React.FC = () => {
       title="Upload Car Photos"
       onBackPress={() => navigation.goBack()}
       backDisabled={uploading}
-      steps={STEPS}
       actions={[
         { label: 'Take Photo', iconName: 'camera', onPress: handleTakePhoto },
         { label: 'Pick Gallery', iconName: 'folder', onPress: handlePickGallery },

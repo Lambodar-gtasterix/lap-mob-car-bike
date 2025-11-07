@@ -14,7 +14,6 @@ import ReadonlyPickerInput from '../../components/form/ReadonlyPickerInput';
 import BottomSheetPicker, {
   BottomSheetPickerOption,
 } from '../../components/common/BottomSheetPicker';
-import { StepConfig } from '../../components/common/ProgressStepper';
 import { colors, spacing } from '../../theme/tokens';
 import { useFormState } from '../../form/hooks/useFormState';
 import {
@@ -37,12 +36,6 @@ type AddCarDetailsScreenNavigationProp = NativeStackNavigationProp<
   SellCarStackParamList,
   'AddCarDetails'
 >;
-
-const SELL_FLOW_STEPS: StepConfig[] = [
-  { label: 'Details', status: 'current' },
-  { label: 'Photos', status: 'upcoming' },
-  { label: 'Confirm', status: 'upcoming' },
-];
 
 const AddCarDetailsScreen: React.FC = () => {
   const navigation = useNavigation<AddCarDetailsScreenNavigationProp>();
@@ -228,7 +221,6 @@ const AddCarDetailsScreen: React.FC = () => {
       <SellFlowLayout
         title="Car Details"
         onBack={() => navigation.goBack()}
-        steps={SELL_FLOW_STEPS}
         footer={
           <PrimaryButton
             label="Next"

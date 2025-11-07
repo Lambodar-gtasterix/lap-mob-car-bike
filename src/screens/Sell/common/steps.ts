@@ -1,8 +1,8 @@
 import { StepConfig } from '../../../components/common/ProgressStepper';
 
-const STEP_LABELS = ['Details', 'Photos', 'Confirm'] as const;
+const STEP_LABELS = ['Details', 'Photos', 'Pricing', 'Location', 'Confirm'] as const;
 
-export type SellFlowStepIndex = 0 | 1 | 2;
+export type SellFlowStepIndex = 0 | 1 | 2 | 3 | 4;
 
 export const buildSellFlowSteps = (activeIndex: SellFlowStepIndex): StepConfig[] =>
   STEP_LABELS.map((label, index) => {

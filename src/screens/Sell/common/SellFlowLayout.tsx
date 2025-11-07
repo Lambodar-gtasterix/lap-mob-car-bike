@@ -10,7 +10,7 @@ import { colors, shadows, spacing } from '../../../theme/tokens';
 interface SellFlowLayoutProps {
   title: string;
   onBack?: () => void;
-  steps: StepConfig[];
+  steps?: StepConfig[];
   footer: React.ReactNode;
   children: React.ReactNode;
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -35,7 +35,6 @@ const SellFlowLayout: React.FC<SellFlowLayoutProps> = ({
       >
         <View style={styles.container}>
           <ScreenHeader title={title} onBack={onBack} />
-          <ProgressStepper steps={steps} />
           <ScrollView
             style={styles.form}
             contentContainerStyle={[styles.formContent, contentContainerStyle]}
@@ -69,14 +68,13 @@ const styles = StyleSheet.create({
   },
   formContent: {
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.xxxl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   footer: {
     backgroundColor: colors.white,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
+    paddingVertical: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     ...shadows.soft,
