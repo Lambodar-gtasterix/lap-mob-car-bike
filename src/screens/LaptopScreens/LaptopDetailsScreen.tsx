@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,23 +14,13 @@ import useListingDetails from '../../hooks/useListingDetails';
 import { deleteLaptop, getLaptopById, LaptopDetail } from '../../api/LaptopsApi';
 import { extractLaptopPhotos } from '../../api/LaptopsApi/photoNormalizer';
 import { MyLaptopAdsStackParamList } from '../../navigation/MyLaptopAdsStack';
+import { formatCurrency } from '../../utils/formatCurrency';
+import { ACTION_BAR_HEIGHT, BOTTOM_SHEET_MENU_HEIGHT } from '../../constants/listing';
 
 type DetailsRouteProp = RouteProp<MyLaptopAdsStackParamList, 'LaptopDetails'>;
 type NavProp = NativeStackNavigationProp<MyLaptopAdsStackParamList>;
 
-const ACTION_BAR_HEIGHT = 96;
 const PLACEHOLDER_IMAGE = require('../../assets/icons/hyundai.png');
-
-const currencyText = (value?: number) => {
-  if (typeof value === 'number') {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value);
-  }
-  return 'Price on request';
-};
 
 const LaptopDetailsScreen: React.FC = () => {
   const navigation = useNavigation<NavProp>();
@@ -73,7 +63,7 @@ const LaptopDetailsScreen: React.FC = () => {
     return `Laptop #${laptopId}`;
   }, [data, laptopId]);
 
-  const priceText = useMemo(() => currencyText(data?.price), [data?.price]);
+  const priceText = useMemo(() => formatCurrency(data?.price), [data?.price]);
 
   const metaLines = useMemo(() => {
     if (!data?.serialNumber) return [];
@@ -178,6 +168,15 @@ const LaptopDetailsScreen: React.FC = () => {
     );
   }, [data, deleting, laptopId, navigation]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (deleting) {
+        setDeleting(false);
+      }
+    };
+  }, [deleting]);
+
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -223,7 +222,7 @@ const LaptopDetailsScreen: React.FC = () => {
         onBid={() => console.log('Start Bidding')}
       />
 
-      <BottomSheet visible={sheetVisible} onClose={() => setSheetVisible(false)} height={0.3}>
+      <BottomSheet visible={sheetVisible} onClose={() => setSheetVisible(false)} height={BOTTOM_SHEET_MENU_HEIGHT}>
         <LaptopCardMenu
           title={titleText}
           statusLabel={data.status}

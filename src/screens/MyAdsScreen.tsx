@@ -8,7 +8,7 @@ import MyAdsListLayout from './MyAds/common/MyAdsListLayout';
 import { useMyAdsStatusFilter } from '../hooks/useMyAdsStatusFilter';
 import { useMyAllAdsData } from '../hooks/useMyAllAdsData';
 import MyAdCard from '../components/myads/MyAdCard';
-import MyAdActionSheet from '../components/myads/MyAdActionSheet';
+import MyAdsCardMenu from '../components/myads/MyAdsCardMenu';
 import type { MyAdEntityType, MyAdListItem } from './MyAds/types';
 import type { MobileItem } from '../api/MobilesApi/getAll';
 import type { LaptopItem } from '../api/LaptopsApi/getAll';
@@ -19,6 +19,7 @@ import { deleteLaptop } from '../api/LaptopsApi';
 import { deleteCar } from '../api/CarsApi';
 import { deleteBike } from '../api/BikesApi';
 import { ENTITY_ORDER } from './MyAds/entityAdapters';
+import { BOTTOM_SHEET_MENU_HEIGHT } from '../constants/listing';
 
 type NavigationProp = NativeStackNavigationProp<MyAdsEntryStackParamList>;
 
@@ -216,14 +217,16 @@ const MyAdsScreen: React.FC = () => {
       onBack={() => navigation.goBack()}
       menuVisible={menuVisible}
       onCloseMenu={closeMenu}
+      bottomSheetHeight={BOTTOM_SHEET_MENU_HEIGHT}
       menuContent={
-        <MyAdActionSheet
+        <MyAdsCardMenu
           title={selectedItem?.title}
-          status={selectedItem?.status}
+          statusLabel={selectedItem?.status}
           entityLabel={selectedItem?.entityLabel}
           onEdit={handleEdit}
           onDelete={confirmDelete}
-          deleting={deleting}
+          isDeleting={deleting}
+          disabled={deleting}
         />
       }
       isInitialLoading={isInitialLoading}

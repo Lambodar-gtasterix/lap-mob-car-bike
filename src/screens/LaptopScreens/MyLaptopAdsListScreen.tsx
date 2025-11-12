@@ -11,6 +11,7 @@ import ListingCardMenu from '../../components/myads/ListingCardMenu';
 import MyAdsListLayout from '../MyAds/common/MyAdsListLayout';
 import { useMyAdsStatusFilter } from '../../hooks/useMyAdsStatusFilter';
 import { formatINR } from '../../utils/formatCurrency';
+import { DEFAULT_LISTING_LOCATION, BOTTOM_SHEET_MENU_HEIGHT, getStatusLabel } from '../../constants/listing';
 
 type NavigationProp = NativeStackNavigationProp<MyLaptopAdsStackParamList>;
 
@@ -92,23 +93,23 @@ const MyLaptopAdsListScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const openMenuFor = (l: LaptopItem) => {
+  const openMenuFor = useCallback((l: LaptopItem) => {
     setSelectedLaptop(l);
     setMenuOpen(true);
-  };
+  }, []);
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setMenuOpen(false);
     setSelectedLaptop(null);
-  };
+  }, []);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!selectedLaptop) return;
     (navigation as any).navigate('UpdateLaptop', { laptopId: selectedLaptop.id });
     closeMenu();
-  };
+  }, [selectedLaptop, navigation, closeMenu]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!selectedLaptop || deleting) return;
 
     Alert.alert(
@@ -136,7 +137,16 @@ const MyLaptopAdsListScreen: React.FC = () => {
       ],
       { cancelable: true }
     );
-  };
+  }, [selectedLaptop, deleting, closeMenu, fetchData]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (deleting) {
+        setDeleting(false);
+      }
+    };
+  }, [deleting]);
 
   const resolveImage = (item: LaptopItem): ImageSourcePropType => {
     const photo = item.laptopPhotos?.[0];
@@ -150,7 +160,7 @@ const MyLaptopAdsListScreen: React.FC = () => {
     return require('../../assets/icons/laptop.png');
   };
 
-  const renderCard = ({ item }: { item: LaptopItem }) => {
+  const renderCard = useCallback(({ item }: { item: LaptopItem }) => {
     const titleText =
       [item.brand, item.model].filter(Boolean).join(' ') || `Laptop #${item.id}`;
     const subtitleText = [item.processor, item.ram].filter(Boolean).join(' | ');
@@ -161,13 +171,13 @@ const MyLaptopAdsListScreen: React.FC = () => {
         priceText={formatINR(item.price || 0)}
         title={titleText}
         subtitle={subtitleText}
-        location="Pune"
-        badgeText={item.status === 'ACTIVE' ? 'Live' : (item.status as string) || 'Info'}
+        location={DEFAULT_LISTING_LOCATION}
+        badgeText={getStatusLabel(item.status as string)}
         onPress={() => navigation.navigate('LaptopDetails', { laptopId: item.id })}
         onMenuPress={() => openMenuFor(item)}
       />
     );
-  };
+  }, [navigation, openMenuFor]);
 
   return (
     <MyAdsListLayout
@@ -185,6 +195,7 @@ const MyLaptopAdsListScreen: React.FC = () => {
       onBack={() => navigation.goBack()}
       menuVisible={menuOpen}
       onCloseMenu={closeMenu}
+      bottomSheetHeight={BOTTOM_SHEET_MENU_HEIGHT}
       menuContent={
         <ListingCardMenu
           title={

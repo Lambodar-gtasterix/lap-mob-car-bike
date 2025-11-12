@@ -12,6 +12,7 @@ import BikeCardMenu from '../../components/bikes/BikeCardMenu';
 import MyAdsListLayout from '../MyAds/common/MyAdsListLayout';
 import { useMyAdsStatusFilter } from '../../hooks/useMyAdsStatusFilter';
 import { formatINR } from '../../utils/formatCurrency';
+import { DEFAULT_LISTING_LOCATION, BOTTOM_SHEET_MENU_HEIGHT, getStatusLabel } from '../../constants/listing';
 
 type NavigationProp = NativeStackNavigationProp<MyBikeAdsStackParamList>;
 
@@ -81,23 +82,23 @@ const MyBikeAdsListScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const openMenuFor = (bike: BikeItem) => {
+  const openMenuFor = useCallback((bike: BikeItem) => {
     setSelectedBike(bike);
     setMenuOpen(true);
-  };
+  }, []);
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setMenuOpen(false);
     setSelectedBike(null);
-  };
+  }, []);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!selectedBike) return;
     navigation.navigate('UpdateBike', { bikeId: selectedBike.bike_id });
     closeMenu();
-  };
+  }, [selectedBike, navigation, closeMenu]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!selectedBike || deleting) return;
 
     Alert.alert(
@@ -125,9 +126,18 @@ const MyBikeAdsListScreen: React.FC = () => {
       ],
       { cancelable: true }
     );
-  };
+  }, [selectedBike, deleting, closeMenu]);
 
-  const renderAdCard = ({ item }: { item: BikeItem }) => {
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (deleting) {
+        setDeleting(false);
+      }
+    };
+  }, [deleting]);
+
+  const renderAdCard = useCallback(({ item }: { item: BikeItem }) => {
     const primaryImage = item.images?.[0]?.image_link
       ? { uri: item.images[0].image_link }
       : require('../../assets/icons/bike.png');
@@ -141,15 +151,15 @@ const MyBikeAdsListScreen: React.FC = () => {
         priceText={formatINR(item.prize)}
         title={titleText}
         subtitle={subtitleText}
-        location="Pune"
-        badgeText={item.status === 'ACTIVE' ? 'Live' : (item.status ?? 'Info')}
+        location={DEFAULT_LISTING_LOCATION}
+        badgeText={getStatusLabel(item.status)}
         onPress={() => {
           navigation.navigate('ProductDetails', { bikeId: item.bike_id });
         }}
         onMenuPress={() => openMenuFor(item)}
       />
     );
-  };
+  }, [navigation, openMenuFor]);
 
   const listFooter =
     hasMore && loading ? <ActivityIndicator style={{ paddingVertical: 16 }} /> : null;
@@ -170,6 +180,7 @@ const MyBikeAdsListScreen: React.FC = () => {
       onBack={() => navigation.goBack()}
       menuVisible={menuOpen}
       onCloseMenu={closeMenu}
+      bottomSheetHeight={BOTTOM_SHEET_MENU_HEIGHT}
       menuContent={
         <BikeCardMenu
           title={selectedBike ? [selectedBike.brand, selectedBike.model].filter(Boolean).join(' ') : undefined}

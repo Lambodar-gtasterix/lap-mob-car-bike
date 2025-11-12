@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -13,23 +13,13 @@ import MobileCardMenu from '../../components/mobiles/MobileCardMenu';
 import useListingDetails from '../../hooks/useListingDetails';
 import { deleteMobile, getMobileById, MobileDetail } from '../../api/MobilesApi';
 import { MyAdsStackParamList } from '../../navigation/MyAdsStack';
+import { formatPriceWithNegotiable } from '../../utils/formatCurrency';
+import { ACTION_BAR_HEIGHT, BOTTOM_SHEET_MENU_HEIGHT } from '../../constants/listing';
 
 type DetailsRouteProp = RouteProp<MyAdsStackParamList, 'ProductDetails'>;
 type NavProp = NativeStackNavigationProp<MyAdsStackParamList>;
 
-const ACTION_BAR_HEIGHT = 96;
 const PLACEHOLDER_IMAGE = require('../../assets/icons/hyundai.png');
-
-const currencyText = (value?: number) => {
-  if (typeof value === 'number') {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(value);
-  }
-  return 'Price on request';
-};
 
 const ProductDetailsScreen: React.FC = () => {
   const navigation = useNavigation<NavProp>();
@@ -61,8 +51,7 @@ const ProductDetailsScreen: React.FC = () => {
   }, [data, mobileId]);
 
   const priceText = useMemo(() => {
-    const base = currencyText(data?.price);
-    return data?.negotiable ? `${base} (Negotiable)` : base;
+    return formatPriceWithNegotiable(data?.price, data?.negotiable);
   }, [data?.price, data?.negotiable]);
 
   const metaLines = useMemo(() => {
@@ -143,6 +132,15 @@ const ProductDetailsScreen: React.FC = () => {
     );
   }, [data, deleting, mobileId, navigation]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (deleting) {
+        setDeleting(false);
+      }
+    };
+  }, [deleting]);
+
   if (loading) {
     return (
       <View style={[styles.container, styles.center]}>
@@ -186,7 +184,7 @@ const ProductDetailsScreen: React.FC = () => {
         onBid={() => console.log('Start Bidding')}
       />
 
-      <BottomSheet visible={sheetVisible} onClose={() => setSheetVisible(false)} height={0.3}>
+      <BottomSheet visible={sheetVisible} onClose={() => setSheetVisible(false)} height={BOTTOM_SHEET_MENU_HEIGHT}>
         <MobileCardMenu
           title={titleText}
           statusLabel={data.status}

@@ -11,38 +11,22 @@ import MobileCardMenu from '../../components/mobiles/MobileCardMenu';
 import MyAdsListLayout from '../MyAds/common/MyAdsListLayout';
 import { useMyAdsStatusFilter } from '../../hooks/useMyAdsStatusFilter';
 import { formatINR } from '../../utils/formatCurrency';
+import { DEFAULT_LISTING_LOCATION, BOTTOM_SHEET_MENU_HEIGHT, getStatusLabel } from '../../constants/listing';
+import { MobileListing } from '../../types/listing';
 
 type NavigationProp = NativeStackNavigationProp<MyMobileAdsStackParamList>;
-
-type ApiMobile = {
-  mobileId: number;
-  title: string;
-  description?: string;
-  price: number;
-  negotiable?: boolean;
-  condition?: string;
-  brand?: string;
-  model?: string;
-  color?: string;
-  yearOfPurchase?: number;
-  status?: 'ACTIVE' | 'DRAFT' | 'SOLD' | string;
-  createdAt?: string;
-  updatedAt?: string | null;
-  sellerId?: number;
-  images?: string[];
-};
 
 const MyMobilesAdsListScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
 
-  const [mobiles, setMobiles] = useState<ApiMobile[]>([]);
+  const [mobiles, setMobiles] = useState<MobileListing[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedMobile, setSelectedMobile] = useState<ApiMobile | null>(null);
+  const [selectedMobile, setSelectedMobile] = useState<MobileListing | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const { selectedTab, setSelectedTab, filtered } = useMyAdsStatusFilter({
@@ -91,23 +75,23 @@ const MyMobilesAdsListScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const openMenuFor = (mobile: ApiMobile) => {
+  const openMenuFor = useCallback((mobile: MobileListing) => {
     setSelectedMobile(mobile);
     setMenuOpen(true);
-  };
+  }, []);
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setMenuOpen(false);
     setSelectedMobile(null);
-  };
+  }, []);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!selectedMobile) return;
     (navigation as any).navigate('UpdateMobile', { mobileId: selectedMobile.mobileId });
     closeMenu();
-  };
+  }, [selectedMobile, navigation, closeMenu]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!selectedMobile || deleting) return;
 
     Alert.alert(
@@ -135,9 +119,18 @@ const MyMobilesAdsListScreen: React.FC = () => {
       ],
       { cancelable: true }
     );
-  };
+  }, [selectedMobile, deleting, closeMenu]);
 
-  const renderAdCard = ({ item }: { item: ApiMobile }) => {
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (deleting) {
+        setDeleting(false);
+      }
+    };
+  }, [deleting]);
+
+  const renderAdCard = useCallback(({ item }: { item: MobileListing }) => {
     const primaryImage = item.images?.[0]
       ? { uri: item.images[0] }
       : require('../../assets/icons/mobile.png');
@@ -151,13 +144,13 @@ const MyMobilesAdsListScreen: React.FC = () => {
         priceText={formatINR(item.price)}
         title={titleText}
         subtitle={subtitleText}
-        location="Pune"
-        badgeText={item.status === 'ACTIVE' ? 'Live' : (item.status ?? 'Info')}
+        location={DEFAULT_LISTING_LOCATION}
+        badgeText={getStatusLabel(item.status)}
         onPress={() => navigation.navigate('ProductDetails', { mobileId: item.mobileId })}
         onMenuPress={() => openMenuFor(item)}
       />
     );
-  };
+  }, [navigation, openMenuFor]);
 
   const listFooter =
     hasMore && loading ? <ActivityIndicator style={{ paddingVertical: 16 }} /> : null;
@@ -178,6 +171,7 @@ const MyMobilesAdsListScreen: React.FC = () => {
       onBack={() => navigation.goBack()}
       menuVisible={menuOpen}
       onCloseMenu={closeMenu}
+      bottomSheetHeight={BOTTOM_SHEET_MENU_HEIGHT}
       menuContent={
         <MobileCardMenu
           title={selectedMobile?.title}

@@ -11,59 +11,22 @@ import CarCardMenu from '../../components/cars/CarCardMenu';
 import MyAdsListLayout from '../MyAds/common/MyAdsListLayout';
 import { useMyAdsStatusFilter } from '../../hooks/useMyAdsStatusFilter';
 import { formatINR } from '../../utils/formatCurrency';
+import { DEFAULT_LISTING_LOCATION, BOTTOM_SHEET_MENU_HEIGHT, getStatusLabel } from '../../constants/listing';
+import { CarListing } from '../../types/listing';
 
 type NavigationProp = NativeStackNavigationProp<MyCarAdsStackParamList>;
-
-type ApiCar = {
-  carId: number;
-  title: string;
-  description?: string;
-  price: number;
-  negotiable?: boolean;
-  condition?: string;
-  brand?: string;
-  model?: string;
-  variant?: string;
-  color?: string;
-  yearOfPurchase?: number;
-  fuelType?: string;
-  transmission?: string;
-  carInsurance?: boolean;
-  carInsuranceDate?: string;
-  carInsuranceType?: string;
-  kmDriven?: number;
-  numberOfOwners?: number;
-  address?: string;
-  city?: string;
-  state?: string;
-  pincode?: string;
-  status?: 'ACTIVE' | 'DRAFT' | 'SOLD' | string;
-  sellerId?: number;
-  createdAt?: string;
-  updatedAt?: string | null;
-  images?: string[];
-  airbag?: boolean;
-  buttonStart?: boolean;
-  sunroof?: boolean;
-  childSafetyLocks?: boolean;
-  acFeature?: boolean;
-  musicFeature?: boolean;
-  powerWindowFeature?: boolean;
-  rearParkingCameraFeature?: boolean;
-  abs?: boolean;
-};
 
 const MyCarAdsListScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
 
-  const [cars, setCars] = useState<ApiCar[]>([]);
+  const [cars, setCars] = useState<CarListing[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [selectedCar, setSelectedCar] = useState<ApiCar | null>(null);
+  const [selectedCar, setSelectedCar] = useState<CarListing | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   const { selectedTab, setSelectedTab, filtered } = useMyAdsStatusFilter({
@@ -112,23 +75,23 @@ const MyCarAdsListScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  const openMenuFor = (car: ApiCar) => {
+  const openMenuFor = useCallback((car: CarListing) => {
     setSelectedCar(car);
     setMenuOpen(true);
-  };
+  }, []);
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setMenuOpen(false);
     setSelectedCar(null);
-  };
+  }, []);
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     if (!selectedCar) return;
     navigation.navigate('UpdateCar', { carId: selectedCar.carId });
     closeMenu();
-  };
+  }, [selectedCar, navigation, closeMenu]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!selectedCar || deleting) return;
 
     Alert.alert(
@@ -156,9 +119,18 @@ const MyCarAdsListScreen: React.FC = () => {
       ],
       { cancelable: true }
     );
-  };
+  }, [selectedCar, deleting, closeMenu]);
 
-  const renderAdCard = ({ item }: { item: ApiCar }) => {
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (deleting) {
+        setDeleting(false);
+      }
+    };
+  }, [deleting]);
+
+  const renderAdCard = useCallback(({ item }: { item: CarListing }) => {
     const primaryImage = item.images?.[0]
       ? { uri: item.images[0] }
       : require('../../assets/icons/mobile.png');
@@ -172,13 +144,13 @@ const MyCarAdsListScreen: React.FC = () => {
         priceText={formatINR(item.price)}
         title={titleText}
         subtitle={subtitleText}
-        location="Pune"
-        badgeText={item.status === 'ACTIVE' ? 'Live' : (item.status ?? 'Info')}
+        location={DEFAULT_LISTING_LOCATION}
+        badgeText={getStatusLabel(item.status)}
         onPress={() => navigation.navigate('ProductDetails', { carId: item.carId })}
         onMenuPress={() => openMenuFor(item)}
       />
     );
-  };
+  }, [navigation, openMenuFor]);
 
   const listFooter =
     hasMore && loading ? <ActivityIndicator style={{ paddingVertical: 16 }} /> : null;
@@ -199,6 +171,7 @@ const MyCarAdsListScreen: React.FC = () => {
       onBack={() => navigation.goBack()}
       menuVisible={menuOpen}
       onCloseMenu={closeMenu}
+      bottomSheetHeight={BOTTOM_SHEET_MENU_HEIGHT}
       menuContent={
         <CarCardMenu
           title={selectedCar?.title}
