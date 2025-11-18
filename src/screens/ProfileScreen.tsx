@@ -8,6 +8,7 @@ import {
   StatusBar,
   Alert,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -101,48 +102,99 @@ const ProfileScreen: React.FC = () => {
         <View style={styles.placeholder} />
       </View>
 
-      {/* Profile Content */}
-      <View style={styles.profileContent}>
-        <View style={styles.profileHeader}>
-          <TouchableOpacity style={styles.avatarContainer} onPress={handlePhotoOptions}>
-            <Image
-              source={
-                profileImage
-                  ? { uri: profileImage }
-                  : require('../assets/icons/user.png')
-              }
-              style={styles.avatar}
-            />
-            <View style={styles.cameraIcon}>
-              <Icon name="camera" size={16} color="#666" />
-            </View>
-          </TouchableOpacity>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Content */}
+        <View style={styles.profileContent}>
+          <View style={styles.profileHeader}>
+            <TouchableOpacity style={styles.avatarContainer} onPress={handlePhotoOptions}>
+              <Image
+                source={
+                  profileImage
+                    ? { uri: profileImage }
+                    : require('../assets/icons/user.png')
+                }
+                style={styles.avatar}
+              />
+              <View style={styles.cameraIcon}>
+                <Icon name="camera" size={16} color="#666" />
+              </View>
+            </TouchableOpacity>
 
-          <View style={styles.profileInfo}>
-            <View style={styles.nameContainer}>
-              {isEditing ? (
-                <TextInput
-                  value={tempName}
-                  onChangeText={setTempName}
-                  style={styles.nameInput}
-                  placeholder="Enter name"
-                />
-              ) : (
-                <Text style={styles.name}>{name}</Text>
-              )}
-              <TouchableOpacity style={styles.editButton} onPress={handleEditToggle}>
-                <Icon
-                  name={isEditing ? 'check' : 'pencil-outline'}
-                  size={14}
-                  color="#007AFF"
-                />
-              </TouchableOpacity>
+            <View style={styles.profileInfo}>
+              <View style={styles.nameContainer}>
+                {isEditing ? (
+                  <TextInput
+                    value={tempName}
+                    onChangeText={setTempName}
+                    style={styles.nameInput}
+                    placeholder="Enter name"
+                  />
+                ) : (
+                  <Text style={styles.name}>{name}</Text>
+                )}
+                <TouchableOpacity style={styles.editButton} onPress={handleEditToggle}>
+                  <Icon
+                    name={isEditing ? 'check' : 'pencil-outline'}
+                    size={14}
+                    color="#007AFF"
+                  />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.username}>@{name.toLowerCase().replace(/\s+/g, '')}</Text>
             </View>
-            <Text style={styles.username}>@{name.toLowerCase().replace(/\s+/g, '')}</Text>
+          </View>
+
+          {/* Menu Options */}
+          <View style={styles.menuContainer}>
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={styles.iconContainer}>
+                  <Icon name="shopping-outline" size={20} color="#1D6D99" />
+                </View>
+                <Text style={styles.menuText}>My Orders</Text>
+              </View>
+              <Icon name="chevron-right" size={20} color="#999" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={styles.iconContainer}>
+                  <Icon name="heart-outline" size={20} color="#1D6D99" />
+                </View>
+                <Text style={styles.menuText}>Wishlist</Text>
+              </View>
+              <Icon name="chevron-right" size={20} color="#999" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={styles.iconContainer}>
+                  <Icon name="lock-outline" size={20} color="#1D6D99" />
+                </View>
+                <Text style={styles.menuText}>Change Password</Text>
+              </View>
+              <Icon name="chevron-right" size={20} color="#999" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem}>
+              <View style={styles.menuItemLeft}>
+                <View style={styles.iconContainer}>
+                  <Icon name="translate" size={20} color="#1D6D99" />
+                </View>
+                <Text style={styles.menuText}>Change Language</Text>
+              </View>
+              <Icon name="chevron-right" size={20} color="#999" />
+            </TouchableOpacity>
           </View>
         </View>
+      </ScrollView>
 
-        {/* 🚪 Logout Button */}
+      {/* 🚪 Logout Button - Fixed at Bottom */}
+      <View style={styles.logoutContainer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Icon name="logout" size={18} color="#fff" style={{ marginRight: 8 }} />
           <Text style={styles.logoutText}>Logout</Text>
@@ -168,8 +220,10 @@ const styles = StyleSheet.create({
   backButton: { padding: 5 },
   headerTitle: { fontSize: 18, fontWeight: '600', color: '#333' },
   placeholder: { width: 34 },
-  profileContent: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 20 },
-  profileHeader: { flexDirection: 'row', alignItems: 'center' },
+  scrollView: { flex: 1 },
+  scrollContent: { flexGrow: 1 },
+  profileContent: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 20 },
+  profileHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 30 },
   avatarContainer: { position: 'relative', marginRight: 20 },
   avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#E5E5E5' },
   cameraIcon: {
@@ -208,14 +262,53 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   username: { fontSize: 16, color: '#666' },
+  menuContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+  },
+  menuItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E8F4F8',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
+  logoutContainer: {
+    backgroundColor: '#f5f5f5',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingBottom: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5E5',
+  },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#1D6D99',
     paddingVertical: 15,
     paddingHorizontal: 16,
-    borderRadius: 6,
-    marginTop: 30,
+    borderRadius: 8,
     justifyContent: 'center',
   },
   logoutText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },

@@ -28,7 +28,13 @@ export default function BottomTabNavigator() {
     <Tab.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Live Bidding" component={LiveBiddingScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarStyle: { display: 'none' },
+        }}
+      />
 
       {/* ✅ Two separate entry points */}
       <Tab.Screen

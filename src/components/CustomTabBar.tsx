@@ -134,6 +134,7 @@ function shouldHideTabBar(state: BottomTabBarProps['state']) {
 
   const routeNames = collectRouteNames(activeRoute as any);
   const hiddenRoutes = new Set([
+    'Profile',
     'SellProduct',
     'AddCarDetails',
     'AddBikeDetails',

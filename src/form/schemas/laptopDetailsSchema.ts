@@ -16,7 +16,10 @@ export const laptopDetailsSchema = z.object({
   dealer: requiredString,
   brand: z.string().min(1, 'Please enter Brand'),
   model: z.string().min(1, 'Please enter Model'),
-  price: numericString,
+  price: numericString.refine(
+    (value) => /^\d{1,6}$/.test(value.trim()),
+    'Price must be a numeric value with up to 6 digits',
+  ),
   warrantyInYear: z.number().int().min(0).max(10),
   processor: requiredString,
   processorBrand: requiredString,
@@ -29,7 +32,13 @@ export const laptopDetailsSchema = z.object({
   batteryLife: requiredString,
   graphicsCard: requiredString,
   graphicBrand: requiredString,
-  weight: requiredString,
+  weight: requiredString
+    .refine((value) => /^\d+(\.\d+)?\s*kg$/.test(value.trim()), 'Weight must end with "kg" and contain only numbers before it')
+    .refine((value) => {
+      const numericPart = value.trim().replace(/\s*kg$/, '');
+      const weightValue = Number(numericPart);
+      return weightValue >= 0.5 && weightValue <= 5;
+    }, 'Weight must be between 0.5 kg and 5 kg'),
   manufacturer: requiredString,
   usbPorts: z
     .string()
