@@ -61,16 +61,11 @@ function MainTabNavigator() {
       tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{ headerShown: false }}
     >
-      {/* Keep your existing tab order and labels */}
+      {/* ALL TABS - Show for everyone, role guards inside screens will handle access */}
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Live Bidding" component={LiveBiddingScreen} />
-
-      {/* ✅ SELL tab now points to SellEntryStack (SellProductScreen → per-entity Sell stacks) */}
       <Tab.Screen name="Sell Product" component={SellEntryStack} />
-
-      {/* ✅ MY ADS tab now points to MyAdsEntryStack (MyAdsScreen → per-entity MyAds stacks) */}
       <Tab.Screen name="My Ads" component={MyAdsEntryStack} />
-
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

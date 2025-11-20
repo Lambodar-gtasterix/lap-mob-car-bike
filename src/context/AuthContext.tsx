@@ -105,6 +105,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (__DEV__) {
           console.warn('[Auth] Failed to resolve sellerId for user', error);
         }
+        // If user has SELLER role but no sellerId, it's a problem
+        // But don't block login - let them access profile to complete setup
+        if (data.roles.includes('SELLER')) {
+          console.warn('[Auth] User has SELLER role but no sellerId found');
+        }
       }
 
       await persistSession({

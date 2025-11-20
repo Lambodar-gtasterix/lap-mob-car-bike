@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, View, Text, StyleSheet } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -20,6 +20,7 @@ import { deleteCar } from '../api/CarsApi';
 import { deleteBike } from '../api/BikesApi';
 import { ENTITY_ORDER } from './MyAds/entityAdapters';
 import { BOTTOM_SHEET_MENU_HEIGHT } from '../constants/listing';
+import { useAuth } from '../context/AuthContext';
 
 type NavigationProp = NativeStackNavigationProp<MyAdsEntryStackParamList>;
 
@@ -82,6 +83,7 @@ const ENTITY_BEHAVIORS: Record<MyAdEntityType, EntityBehavior> = {
 
 const MyAdsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { roles, sellerId } = useAuth();
   const {
     items,
     loading,
@@ -101,6 +103,20 @@ const MyAdsScreen: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const focusRefreshGuard = useRef(false);
   const lastErrorRef = useRef<string | null>(null);
+
+  // Role guard: Only sellers with valid sellerId can access this screen
+  const isSeller = roles.includes('SELLER') && sellerId !== null;
+
+  if (!isSeller) {
+    return (
+      <View style={roleGuardStyles.container}>
+        <Text style={roleGuardStyles.title}>Seller Access Only</Text>
+        <Text style={roleGuardStyles.message}>
+          This feature is only available for sellers. Please contact support to upgrade your account.
+        </Text>
+      </View>
+    );
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -242,5 +258,27 @@ const MyAdsScreen: React.FC = () => {
     />
   );
 };
+
+const roleGuardStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+  },
+  message: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+});
 
 export default MyAdsScreen;

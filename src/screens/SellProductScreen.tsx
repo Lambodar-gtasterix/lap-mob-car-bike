@@ -4,12 +4,28 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SellEntryStackParamList } from '../navigation/SellEntryStack';
+import { useAuth } from '../context/AuthContext';
 
 type Nav = NativeStackNavigationProp<SellEntryStackParamList, 'SellProduct'>;
 
 const SellProductScreen: React.FC = () => {
   const navigation = useNavigation<Nav>();
+  const { roles, sellerId } = useAuth();
   const [pressedItem, setPressedItem] = useState<string | null>(null);
+
+  // Role guard: Only sellers with valid sellerId can access this screen
+  const isSeller = roles.includes('SELLER') && sellerId !== null;
+
+  if (!isSeller) {
+    return (
+      <View style={roleGuardStyles.container}>
+        <Text style={roleGuardStyles.title}>Seller Access Only</Text>
+        <Text style={roleGuardStyles.message}>
+          This feature is only available for sellers. Please contact support to upgrade your account.
+        </Text>
+      </View>
+    );
+  }
 
   const renderItem = (label: string, icon: string, onPress?: () => void) => (
     <Pressable
@@ -54,6 +70,28 @@ const SellProductScreen: React.FC = () => {
     </View>
   );
 };
+
+const roleGuardStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+  },
+  message: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+});
 
 export default SellProductScreen;
 
