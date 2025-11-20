@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import MyAdsScreen from '../screens/MyAdsScreen';
+import MyAdsScreen from '../features/seller/listings/screens/MyAdsScreen';
 
 // Per-entity stacks
 import MyMobileAdsStack from './MyMobileAdsStack';

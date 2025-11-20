@@ -5,12 +5,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // Screens
-import LoginScreen from './src/screens/LoginScreen';
-import SignupScreen from './src/screens/SignupScreen';
+import LoginScreen from './src/features/auth/screens/LoginScreen';
+import SignupScreen from './src/features/auth/screens/SignupScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import ProductDetailsScreen from './src/screens/MobileScreens/ProductDetailsScreen';
 import LiveBiddingScreen from './src/screens/LiveBiddingScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import ProfileScreen from './src/features/shared/profile/screens/ProfileScreen';
 
 // ✅ New entry stacks (replace old SellProductStack/MyAdsStack usage here)
 import SellEntryStack from './src/navigation/SellEntryStack';

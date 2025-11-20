@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import SellProductScreen from '../screens/SellProductScreen';
+import SellProductScreen from '../features/seller/sell/screens/SellProductScreen';
 import SellMobileStack from './SellMobileStack';
 import SellLaptopStack from './SellLaptopStack';
 import SellBikeStack from './SellBikeStack';
